@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { GraduationCap } from "lucide-react";
+import { Button } from "../ui/button";
 
 export function Navbar() {
   return (
@@ -17,7 +17,9 @@ export function Navbar() {
           <Link href="#features" className="hover:text-foreground transition-colors">Features</Link>
           <Link href="#faq" className="hover:text-foreground transition-colors">FAQ</Link>
         </nav>
-        <Button size="sm">Upload Transcript</Button>
+        <Button size="sm">
+          <Link href="/upload">Upload Transcript</Link>
+        </Button>
       </div>
     </header>
   );

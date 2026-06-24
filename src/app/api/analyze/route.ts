@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { anthropic } from "@/lib/claude";
 import { TRANSCRIPT_EXTRACTION_PROMPT, CONFIDENCE_THRESHOLD } from "@/lib/prompt";
-import { normalizeExtraction } from "@/lib/normalizer";
+// import { normalizeExtraction } from "@/lib/normalizer";
+import { parseTranscript } from "@/lib/parser";
 import { fileToClaudeDocument } from "@/lib/fileConverter";
 import { validateFile } from "@/lib/upload";
 
@@ -85,9 +86,9 @@ export async function POST(req: NextRequest) {
       .replace(/```\s*$/i, "")
       .trim();
 
-    let rawExtraction: Record<string, unknown>;
+    let rawExtraction: unknown;
     try {
-      rawExtraction = JSON.parse(cleaned);
+      rawExtraction = JSON.parse(cleaned) as unknown;
     } catch {
       return NextResponse.json(
         {
@@ -100,7 +101,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 6. Confidence check ─────────────────────────────────────────
-    const confidence = (rawExtraction.extractionConfidence as number) ?? 0;
+    const confidence = ((rawExtraction as { extractionConfidence?: number }).extractionConfidence as number) ?? 0;
     if (confidence < CONFIDENCE_THRESHOLD) {
       return NextResponse.json(
         {
@@ -115,13 +116,23 @@ export async function POST(req: NextRequest) {
     }
 
     // ── 7. Normalize and return ─────────────────────────────────────
-    const transcriptData = normalizeExtraction(
-      rawExtraction as unknown as Parameters<typeof normalizeExtraction>[0]
+    // const transcriptData = normalizeExtraction(
+    //   rawExtraction as unknown as Parameters<typeof normalizeExtraction>[0]
+    // );
+
+    // return NextResponse.json({
+    //   success: true,
+    //   data: transcriptData,
+    // });
+
+    const { data: transcriptData, warnings } = parseTranscript(
+        rawExtraction as Parameters<typeof parseTranscript>[0]
     );
 
     return NextResponse.json({
-      success: true,
-      data: transcriptData,
+        success: true,
+        data: transcriptData,
+        warnings,   
     });
 
   } catch (error) {

@@ -23,12 +23,13 @@ export interface Course {
 }
 
 export interface Term {
-  name: string;          // e.g. "Fall 2023"
+  name: string;
   academicYear: string;
   courses: Course[];
   termGPA: number | null;
   totalCredits: number;
   gpaCredits: number;
+  qualityPoints: number;   // ← add this line
 }
 
 export interface TranscriptData {

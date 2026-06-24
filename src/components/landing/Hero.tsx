@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ShieldCheck, Zap, Lock } from "lucide-react";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -32,8 +33,10 @@ export function Hero() {
       {/* CTAs */}
       <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
         <Button size="lg" className="gap-2 px-8 text-base">
-          Upload Transcript
-          <ArrowRight className="h-4 w-4" />
+          <Link href="/upload" className="flex gap-2 items-center" >
+            Upload Transcript
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </Button>
         <Button size="lg" variant="outline" className="px-8 text-base">
           See Demo

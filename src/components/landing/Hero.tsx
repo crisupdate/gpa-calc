@@ -39,7 +39,9 @@ export function Hero() {
           </Link>
         </Button>
         <Button size="lg" variant="outline" className="px-8 text-base">
-          See Demo
+          <Link target="_blank" href="https://www.loom.com/share/bea3f5883aa74ac5bbbde7c4d23fe2b2" className="flex gap-2 items-center" >
+            See Demo
+          </Link>
         </Button>
       </div>
 

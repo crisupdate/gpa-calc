@@ -53,4 +53,11 @@ bun dev
 
 ---
 
+### Some examples of PDF files for testing:
+**Find here:** 
+- [transcript_graduate_school.pdf](https://gpa-analyzer-challenge.vercel.app/pdf_examples/transcript_graduate_school.pdf)
+- [transcript_international_4year.pdf](https://gpa-analyzer-challenge.vercel.app/pdf_examples/transcript_international_4year.pdf)
+- [transcript_state_university.pdf](https://gpa-analyzer-challenge.vercel.app/pdf_examples/transcript_state_university.pdf)
+
+
 Built with Next.js · TypeScript · shadcn/ui · Claude API

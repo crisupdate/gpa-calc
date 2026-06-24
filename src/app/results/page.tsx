@@ -6,6 +6,7 @@ import { TranscriptData } from "@/types/transcript";
 import { Loader2, GraduationCap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { computeCumulativeGPA, computeRunningGPA, classifyGPA, getGPAColor } from "@/lib/gpa";
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -37,9 +38,13 @@ export default function ResultsPage() {
 
   if (!data) return null;
 
+  // ── Safe to compute now — data is guaranteed non-null ──
+  const gpaData        = computeCumulativeGPA(data);
+  const runningGPA     = computeRunningGPA(data);
+  const classification = classifyGPA(data.cumulativeGPA);
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border px-6 py-4">
         <div className="mx-auto flex max-w-4xl items-center gap-2">
           <GraduationCap className="h-5 w-5 text-primary" />
@@ -49,7 +54,6 @@ export default function ResultsPage() {
       </header>
 
       <main className="mx-auto max-w-4xl px-6 py-12 space-y-8">
-        {/* Top stats */}
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-1">
             {data.studentName ?? "Your Transcript"}
@@ -61,10 +65,10 @@ export default function ResultsPage() {
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
           {[
-            { label: "Cumulative GPA", value: data.cumulativeGPA?.toFixed(2) ?? "N/A" },
-            { label: "GPA Credits",    value: data.totalGPACredits },
-            { label: "Quality Points", value: data.totalQualityPoints.toFixed(1) },
-            { label: "Terms Found",    value: data.terms.length },
+            { label: "Cumulative GPA",  value: data.cumulativeGPA?.toFixed(2) ?? "N/A" },
+            { label: "GPA Credits",     value: data.totalGPACredits },
+            { label: "Quality Points",  value: data.totalQualityPoints.toFixed(1) },
+            { label: "Terms Found",     value: data.terms.length },
           ].map((s) => (
             <Card key={s.label}>
               <CardContent className="pt-6">
@@ -75,7 +79,29 @@ export default function ResultsPage() {
           ))}
         </div>
 
-        {/* Confidence */}
+        <Card>
+          <CardContent className="pt-6 flex items-center justify-between">
+            <div>
+              <p className="text-xs text-muted-foreground">GPA Classification</p>
+              <p className={`text-lg font-semibold mt-1 ${getGPAColor(data.cumulativeGPA)}`}>
+                {classification}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Highest Term GPA</p>
+              <p className="text-lg font-semibold text-foreground mt-1">
+                {gpaData.highestTermGPA?.toFixed(2) ?? "N/A"}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Lowest Term GPA</p>
+              <p className="text-lg font-semibold text-foreground mt-1">
+                {gpaData.lowestTermGPA?.toFixed(2) ?? "N/A"}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card>
           <CardContent className="pt-6 flex items-center gap-3">
             <div className="text-sm text-muted-foreground">Extraction confidence:</div>
@@ -90,7 +116,6 @@ export default function ResultsPage() {
           </CardContent>
         </Card>
 
-        {/* Per-term breakdown */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-foreground">Terms</h2>
           {data.terms.map((term) => (
@@ -116,10 +141,7 @@ export default function ResultsPage() {
                   </thead>
                   <tbody>
                     {term.courses.map((course, i) => (
-                      <tr
-                        key={i}
-                        className="border-b border-border/50 last:border-0"
-                      >
+                      <tr key={i} className="border-b border-border/50 last:border-0">
                         <td className="py-1.5 text-muted-foreground font-mono text-xs">
                           {course.code}
                         </td>
@@ -150,7 +172,6 @@ export default function ResultsPage() {
           ))}
         </div>
 
-        {/* Raw JSON toggle for debugging */}
         <details className="rounded-lg border border-border hidden">
           <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground">
             View raw extracted JSON
